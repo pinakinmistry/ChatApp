@@ -13,7 +13,7 @@
 			position: relative;
 			width: 100%;
 			max-width: 768px;
-			height: 100%;
+			height: 95%;
 			margin: auto;
 			padding: 5px;
 			background: #000;
@@ -37,7 +37,7 @@
 		}
 
 		#messageTxt {
-			width: 70%;
+			width: 75%;
 		}
 
 		.message {
@@ -49,7 +49,7 @@
 
 		.myMessage {
 			float: left;
-			background: pink;
+			background: #45b29d;
 			clear: right;
 		}
 
@@ -59,12 +59,12 @@
 			height: 0; 
 			border-top: 5px solid transparent;
 			border-bottom: 5px solid transparent; 
-			border-right:5px solid pink; 
+			border-right:5px solid #45b29d; 
 		}
 
 		.othersMessage {
 			float: right;
-			background: orange;
+			background: #EFC94C;
 		}
 
 		.arrow-right {
@@ -73,7 +73,7 @@
 			height: 0; 
 			border-top: 5px solid transparent;
 			border-bottom: 5px solid transparent;
-			border-left: 5px solid orange;
+			border-left: 5px solid #EFC94C;
 		}
 
 		.floatRight {
@@ -115,16 +115,11 @@
 				} else {
 					$chats.append('<div class="chat"><div class="arrow-right"></div><div class="message othersMessage"><b>' + data.username + ': </b>' + data.msg + '</div></div>');
 				}
-				$chats.animate({ scrollTop: $chats.prop("scrollHeight") - $chats.height() }, 200);
+				$chats.animate({ scrollTop: $chats.prop("scrollHeight") - $chats.height() }, 300);
 			});
 
 		});
 
-		function getTime() {
-			var time = new Date(),
-				hhmmss = time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
-			return hhmmss; 
-		}
 	</script>
 
 </body>

@@ -2,38 +2,90 @@
 <head>
 	<title>Chat App</title>
 	<style>
+		body, input {
+			font-family: "Century Gothic", CenturyGothic, Geneva, AppleGothic, sans-serif;
+			font-size: 16px;
+			margin: 0;
+		}
+
+		.wrapper {
+			position: relative;
+			width: 100%;
+			max-width: 768px;
+			margin: auto;
+			padding: 5px;
+			background: #000;
+			color: ivory;
+		}
+
+		.title {
+			font-size: 30px;
+			margin-bottom: 5px;
+		}
+
 		#chat {
 			height: 350px;
+			overflow-y: scroll;
+		}
+
+		#messageTxt {
+			width: 70%;
+		}
+
+		.message {
+			width: 50%;
+			padding: 3px 20px 3px 10px;
+		}
+
+		.myMessage {
+			float: left;
+			background: pink;
+		}
+
+		.othersMessage {
+			float: right;
+			background: orange;
+			text-align: right;
 		}
 	</style>
 </head>
 <body>
-	<div id="chat"></div>
-
-	<form id="sendMessage">
-		<input type="text" size="50" id="message"></input>
-		<input type="submit"></input>
-	</form>
+	<div class="wrapper">
+		<div class="title">Chat App</div>
+		<div id="chat"></div>
+		<form id="sendMessage">
+			<input type="text" id="messageTxt"></input>
+			<input type="submit"></input>
+		</form>
+	</div>
 	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script>
 
 		jQuery(function($) {
 			var socket = io.connect(),
+				username = 'User' + Math.random(),
 				$messageForm = $('#sendMessage'),
-				$messageBox = $('#message'),
+				$messageBox = $('#messageTxt'),
 				$chat = $('#chat');
 
 			$messageForm.submit(function(event) {
-				console.log('hi')
 				event.preventDefault();
-				socket.emit('send message', $messageBox.val());
+				if(!$messageBox.val()) { return; }
+				socket.emit('send message', 
+					{username: username, msg: $messageBox.val()});
 				$messageBox.val('');
 			});
 
 			socket.on('new message', function(data) {
-				$chat.append(data + '<br/>');
-			})
+				if(data.username === username) {
+					$chat.append('<div class="message myMessage">' + data.msg + '</div>');
+				} else {
+					$chat.append('<div class="message othersMessage">' + data.msg + '</div>');
+				}
+				$chat.animate({ scrollTop: $chat.prop("scrollHeight") - $chat.height() }, 200);
+			});
+
 		});
 
 	</script>

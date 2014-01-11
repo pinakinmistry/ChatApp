@@ -1,6 +1,6 @@
 <html>
 <head>
-	<title>Chat App</title>
+	<title>Chat App on NodeJS</title>
 	<meta name="viewport" content="width=device-width, user-scalable=no">
 	<style>
 		body, input {
@@ -13,6 +13,7 @@
 			position: relative;
 			width: 100%;
 			max-width: 768px;
+			height: 100%;
 			margin: auto;
 			padding: 5px;
 			background: #000;
@@ -24,9 +25,15 @@
 			margin-bottom: 5px;
 		}
 
-		#chat {
-			height: 350px;
+		#chats {
+			height: 90%;
 			overflow-y: scroll;
+		}
+
+		.chat {
+			width: 100%;
+			position: relative;
+			float: left;
 		}
 
 		#messageTxt {
@@ -34,26 +41,50 @@
 		}
 
 		.message {
-			width: 50%;
-			padding: 3px 20px 3px 10px;
+			width: 70%;
+			padding: 3px 5px 3px 10px;
+			border-bottom: 1px solid black;
+			word-wrap:break-word;
 		}
 
 		.myMessage {
 			float: left;
 			background: pink;
+			clear: right;
+		}
+
+		.arrow-left {
+			float: left;
+			width: 0; 
+			height: 0; 
+			border-top: 5px solid transparent;
+			border-bottom: 5px solid transparent; 
+			border-right:5px solid pink; 
 		}
 
 		.othersMessage {
 			float: right;
 			background: orange;
-			text-align: right;
+		}
+
+		.arrow-right {
+			float: right;
+			width: 0; 
+			height: 0; 
+			border-top: 5px solid transparent;
+			border-bottom: 5px solid transparent;
+			border-left: 5px solid orange;
+		}
+
+		.floatRight {
+			float: right;
 		}
 	</style>
 </head>
 <body>
 	<div class="wrapper">
-		<div class="title">Chat App</div>
-		<div id="chat"></div>
+		<div class="title">Chat App on NodeJS</div>
+		<div id="chats"></div>
 		<form id="sendMessage">
 			<input type="text" id="messageTxt"></input>
 			<input type="submit"></input>
@@ -65,10 +96,10 @@
 
 		jQuery(function($) {
 			var socket = io.connect(),
-				username = 'User' + Math.random(),
+				username = 'User' + Math.random().toFixed(2),
 				$messageForm = $('#sendMessage'),
 				$messageBox = $('#messageTxt'),
-				$chat = $('#chat');
+				$chats = $('#chats');
 
 			$messageForm.submit(function(event) {
 				event.preventDefault();
@@ -80,15 +111,20 @@
 
 			socket.on('new message', function(data) {
 				if(data.username === username) {
-					$chat.append('<div class="message myMessage">' + data.msg + '</div>');
+					$chats.append('<div class="chat"><div class="arrow-left"></div><div class="message myMessage"><b>' + data.username + ': </b>' + data.msg + '</div></div>');
 				} else {
-					$chat.append('<div class="message othersMessage">' + data.msg + '</div>');
+					$chats.append('<div class="chat"><div class="arrow-right"></div><div class="message othersMessage"><b>' + data.username + ': </b>' + data.msg + '</div></div>');
 				}
-				$chat.animate({ scrollTop: $chat.prop("scrollHeight") - $chat.height() }, 200);
+				$chats.animate({ scrollTop: $chats.prop("scrollHeight") - $chats.height() }, 200);
 			});
 
 		});
 
+		function getTime() {
+			var time = new Date(),
+				hhmmss = time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
+			return hhmmss; 
+		}
 	</script>
 
 </body>

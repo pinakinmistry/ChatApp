@@ -3,7 +3,7 @@
 	<title>Chat App on NodeJS</title>
 	<meta name="viewport" content="width=device-width, user-scalable=no">
 	<style>
-		body, input {
+		body, input, button {
 			font-family: "Century Gothic", CenturyGothic, Geneva, AppleGothic, sans-serif;
 			font-size: 16px;
 			margin: 0;
@@ -12,7 +12,7 @@
 		.wrapper {
 			position: relative;
 			width: 100%;
-			max-width: 768px;
+			max-width: 1024px;
 			height: 95%;
 			margin: auto;
 			padding: 5px;
@@ -20,10 +20,51 @@
 			color: ivory;
 		}
 
-		.title {
-			font-size: 30px;
-			margin-bottom: 5px;
+		#landingPage {
+			width: 320px;
+			position: relative;
+			margin: auto;
 		}
+
+		.alignCenter {
+			width: 30%;
+			margin: auto;
+			margin-top: 15px;
+		}
+
+		#start {
+			width: 100%;
+		}
+
+		#chatRoom {
+			display: none;
+		}
+
+		.title {
+			font-size: 26px;
+			margin-bottom: 40px;
+			color: #EFC94C;
+		}
+
+		#roomTitle {
+			font-size: 18px;
+		}
+
+		ul.login{
+			list-style: none;
+			padding: 5px;
+			margin: auto;
+		}
+
+		.login .entry {
+			width: 150px;
+			display: inline-block;
+			color: #45b29d;
+		}
+
+		.login input {
+			width: 140px;
+		} 
 
 		#chats {
 			height: 90%;
@@ -83,12 +124,28 @@
 </head>
 <body>
 	<div class="wrapper">
-		<div class="title">Chat App on NodeJS</div>
-		<div id="chats"></div>
-		<form id="sendMessage">
-			<input type="text" id="messageTxt"></input>
-			<input type="submit"></input>
-		</form>
+		<div id="landingPage">
+			<div class="title">Chat App Using NodeJS</div>
+			<ul class="login">
+				<li><b class="entry">Enter Your Name</b>: <input type="text" id="username"></input></li>
+				<li><b class="entry">Create New Room</b>: <input type="text" id="newroom"></input></li>
+				<li><b class="entry"> OR </b></li>
+				<li><b class="entry">Enter Existing Room</b>: <input type="text" id="roomname"></input></li>
+			</ul>
+			<div class="alignCenter">
+				<button id="start">Start</button>		
+			</div>
+		</div>
+		
+		<div id="chatRoom">
+			<div id="chats">
+				<div class="title" id="roomTitle"></div>
+			</div>
+			<form id="sendMessage">
+				<input type="text" id="messageTxt"></input>
+				<input type="submit"></input>
+			</form>
+		</div>
 	</div>
 	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
@@ -96,24 +153,45 @@
 
 		jQuery(function($) {
 			var socket = io.connect(),
-				username = 'User' + Math.random().toFixed(2),
+				username,
+				roomname,
 				$messageForm = $('#sendMessage'),
 				$messageBox = $('#messageTxt'),
 				$chats = $('#chats');
+
+			$('#start').click(function() {
+				username = $('#username').val();
+				roomname = $('#newroom').val() || $('#roomname').val();
+				console.log(username, roomname)
+				if(!username || !roomname) {
+					alert('Enter Your Name and Room Name');
+				} else {
+					$('#landingPage').hide();
+					$('#chatRoom').show();
+					$('#roomTitle').html(username + ', Welcome to ' + roomname);
+					socket.emit('send message', {username: username, roomname: roomname});
+				}
+
+			});
 
 			$messageForm.submit(function(event) {
 				event.preventDefault();
 				if(!$messageBox.val()) { return; }
 				socket.emit('send message', 
-					{username: username, msg: $messageBox.val()});
+					{username: username, msg: $messageBox.val(), roomname: roomname});
 				$messageBox.val('');
 			});
 
 			socket.on('new message', function(data) {
-				if(data.username === username) {
-					$chats.append('<div class="chat"><div class="arrow-left"></div><div class="message myMessage"><b>' + data.username + ': </b>' + data.msg + '</div></div>');
+				if(data.roomname !== roomname) { return; }
+				if(data.msg) {
+					if(data.username === username) {
+						$chats.append('<div class="chat"><div class="arrow-left"></div><div class="message myMessage"><b>' + data.username + ': </b>' + data.msg + '</div></div>');
+					} else {
+						$chats.append('<div class="chat"><div class="arrow-right"></div><div class="message othersMessage"><b>' + data.username + ': </b>' + data.msg + '</div></div>');
+					}
 				} else {
-					$chats.append('<div class="chat"><div class="arrow-right"></div><div class="message othersMessage"><b>' + data.username + ': </b>' + data.msg + '</div></div>');
+					$chats.append(data.username + ' enters the chat room.<br/>');
 				}
 				$chats.animate({ scrollTop: $chats.prop("scrollHeight") - $chats.height() }, 300);
 			});

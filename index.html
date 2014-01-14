@@ -27,9 +27,16 @@
 		}
 
 		.alignCenter {
-			width: 30%;
+			width: 160px;
 			margin: auto;
 			margin-top: 15px;
+		}
+
+		.alignBottom {
+			width: 100%;
+			margin-top: 70px;
+			text-align: center;
+			font-weight: 100;
 		}
 
 		#start {
@@ -62,12 +69,20 @@
 			color: #45b29d;
 		}
 
+		.login .subEntry {
+			width: 100%;
+			font-size: 14px;
+			font-weight: 100;
+		}
+
 		.login input {
 			width: 140px;
+			border-bottom: 1px solid #000;
 		} 
 
 		#chats {
 			height: 90%;
+			width: 99.7%;
 			overflow-y: scroll;
 		}
 
@@ -75,6 +90,7 @@
 			width: 100%;
 			position: relative;
 			float: left;
+			font-weight: 100;
 		}
 
 		#messageTxt {
@@ -98,7 +114,7 @@
 			float: left;
 			width: 0; 
 			height: 0; 
-			border-top: 5px solid transparent;
+			border-top: 2px solid #45b29d;
 			border-bottom: 5px solid transparent; 
 			border-right:5px solid #45b29d; 
 		}
@@ -112,7 +128,7 @@
 			float: right;
 			width: 0; 
 			height: 0; 
-			border-top: 5px solid transparent;
+			border-top: 2px solid #EFC94C;
 			border-bottom: 5px solid transparent;
 			border-left: 5px solid #EFC94C;
 		}
@@ -127,14 +143,16 @@
 		<div id="landingPage">
 			<div class="title">Chat App Using NodeJS</div>
 			<ul class="login">
-				<li><b class="entry">Enter Your Name</b>: <input type="text" id="username"></input></li>
-				<li><b class="entry">Create New Room</b>: <input type="text" id="newroom"></input></li>
-				<li><b class="entry"> OR </b></li>
-				<li><b class="entry">Enter Existing Room</b>: <input type="text" id="roomname"></input></li>
+				<li><b class="entry">
+					Enter Your Name</b>: <input type="text" id="username" autofocus></input>
+				</li>
+				<li><b class="entry">Enter Room Name</b>: <input type="text" id="roomname"></input></li>
+				<li><b class="entry subEntry">(Share room name with your fellas to chat)</li>
 			</ul>
 			<div class="alignCenter">
-				<button id="start">Start</button>		
+				<button id="start">Start Chatting</button>		
 			</div>
+			<div class="alignBottom">Chat App is new 'Hello World' Thingy.<br/> - Pinakin Mistry.</div>
 		</div>
 		
 		<div id="chatRoom">
@@ -142,12 +160,12 @@
 				<div class="title" id="roomTitle"></div>
 			</div>
 			<form id="sendMessage">
-				<input type="text" id="messageTxt"></input>
+				<input type="text" id="messageTxt" autofocus></input>
 				<input type="submit"></input>
 			</form>
 		</div>
 	</div>
-	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script src="jquery-1.10.0.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script>
 
@@ -161,14 +179,14 @@
 
 			$('#start').click(function() {
 				username = $('#username').val();
-				roomname = $('#newroom').val() || $('#roomname').val();
+				roomname = $('#roomname').val();
 				console.log(username, roomname)
 				if(!username || !roomname) {
 					alert('Enter Your Name and Room Name');
 				} else {
 					$('#landingPage').hide();
 					$('#chatRoom').show();
-					$('#roomTitle').html(username + ', Welcome to ' + roomname);
+					$('#roomTitle').html('Hi ' + username + ', Welcome to ' + roomname + '.');
 					socket.emit('send message', {username: username, roomname: roomname});
 				}
 

@@ -3,6 +3,8 @@ var express = require('express'),
 	server = require('http').createServer(app),
 	io = require('socket.io').listen(server);
 
+app.use(express.static(__dirname + '/'));
+
 server.listen(4001);
 
 app.get('/', function(req, res) {
